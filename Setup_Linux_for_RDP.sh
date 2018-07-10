@@ -10,7 +10,7 @@ if [ "$currentUser" == "root" ] ; then
     #Check if uncomplicated firewall exists and if so ask if the user wants to enable it
     if [ -n "$(type -t ufw)" ] ; then
         if [ "$(ufw status | awk '{print $2}')" = "inactive" ] ; then
-            read -p "Would you Enable the Firewall? (Y/N) " -n 1 -r
+            read -p "Would you like to Enable the Uncomplicated Firewall? (Y/N) " -n 1 -r
             echo    # (optional) move to a new line
             if [[ $REPLY =~ ^[Yy]$ ]]
             then
