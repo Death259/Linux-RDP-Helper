@@ -64,9 +64,32 @@ if [ "$currentUser" == "root" ] ; then
         esac
     done
 
-    apt-get -y install shutter
-    apt-get -y install clamav
-    apt-get -y install clamtk
+    chooseScreenshotTool='Which ScreenShot Tool Would you Like to Install?: '
+    ScreenShotToolOptions=("Shutter" "Kazam" "Flameshot")
+    select opt in "${ScreenShotToolOptions[@]}"
+    do
+        case $opt in
+            "Shutter")
+                apt-get -y install shutter
+                break;
+                ;;
+            "Kazam")
+                apt-get -y install kazam
+                break;
+                ;;
+            "Flameshot")
+                apt-get -y install flameshot
+                break;
+                ;;
+            "None")
+                break
+                ;;
+            *) echo "invalid option $REPLY";;
+        esac
+    done
+
+
+
     apt-get -y install numlockx
     numlockx on
     pacmd set-card-profile 2 output:iec958-stereo
