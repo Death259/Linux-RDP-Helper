@@ -10,30 +10,31 @@ if [ "$currentUser" == "root" ] ; then
     #Check if uncomplicated firewall exists and if so ask if the user wants to enable it
     if [ -n "$(type -t ufw)" ] ; then
         if [ "$(ufw status | awk '{print $2}')" = "inactive" ] ; then
-            read -p "Would you like to Enable the Uncomplicated Firewall? (Y/N) " -n 1 -r
-            echo    # (optional) move to a new line
+            read -p "Would you like to Enable the Uncomplicated Firewall? (Y/N) "
+            #echo    # (optional) move to a new line
             if [[ $REPLY =~ ^[Yy]$ ]]
             then
                 ufw enable
             fi
+            echo
         fi
     fi
 
-    chooseIDE='Which IDE Would you Like to Install?: '
+    echo 'Which IDE Would you Like to Install?: '
     IDEOptions=("jedit" "kdevelop" "scite" "None")
     select opt in "${IDEOptions[@]}"
     do
         case $opt in
             "jedit")
-                apt-get install jedit
+                apt-get -y install jedit
                 break;
                 ;;
             "kdevelop")
-                apt-get install kdevelop
+                apt-get -y install kdevelop
                 break;
                 ;;
             "scite")
-                apt-get install scite
+                apt-get -y install scite
                 break;
                 ;;
             "None")
@@ -42,19 +43,19 @@ if [ "$currentUser" == "root" ] ; then
             *) echo "invalid option $REPLY";;
         esac
     done
+    echo
 
-    chooseAntiVirus='Which AntiVirus Would you Like to Install?: '
+    echo 'Which AntiVirus Would you Like to Install?: '
     AntiVirusOptions=("ClamAV" "Chkrootkit" "None")
     select opt in "${AntiVirusOptions[@]}"
     do
         case $opt in
             "ClamAV")
-                apt-get install clamav
-                apt-get install clamtk
+                apt-get -y install clamav clamtk
                 break;
                 ;;
             "Chkrootkit")
-                apt-get install chkrootkit
+                apt-get -y install chkrootkit
                 break;
                 ;;
             "None")
@@ -63,8 +64,9 @@ if [ "$currentUser" == "root" ] ; then
             *) echo "invalid option $REPLY";;
         esac
     done
+    echo
 
-    chooseScreenshotTool='Which ScreenShot Tool Would you Like to Install?: '
+    echo 'Which ScreenShot Tool Would you Like to Install?: '
     ScreenShotToolOptions=("Shutter" "Kazam" "Flameshot" "None")
     select opt in "${ScreenShotToolOptions[@]}"
     do
@@ -87,29 +89,46 @@ if [ "$currentUser" == "root" ] ; then
             *) echo "invalid option $REPLY";;
         esac
     done
+    echo
 
-    
     #echo "Installing FreeRDP..."
     #sudo apt-get -qq install freerdp-x11 yad zenity
     #sudo apt-get -y install freerdp2-x11
     echo "What is the username?"
     read -r username
+    echo
+
     echo "What is the UPN?"
     read -r UPN
+    echo
+
     echo "What is the Domain?"
     read -r domain
+    echo
+
     echo "What is the gateway?"
     read -r gateway
+    echo
+
     echo "What is the computer name?"
     read -r computerName
+    echo
 
-    chooseRDPClient='Which RDP Client Would you Like to Install?: '
+    echo 'Which RDP Client Would you Like to Install?: '
     RDPClientOptions=("Remmina" "FreeRDP" "None")
-    select opt in "${ScreenShotToolOptions[@]}"
+    select opt in "${RDPClientOptions[@]}"
     do
         case $opt in
             "Remmina")
                 apt-get -y install remmina remmina-plugin-rdp
+                echo -e "full address:s:$computerName" > ~/Desktop/$computerName-Remote.rdp
+                echo -e "gatewayhostname:s:$gateway" >> ~/Desktop/$computerName-Remote.rdp
+                echo -e "promptcredentialonce:i:1" >> ~/Desktop/$computerName-Remote.rdp
+                echo -e "prompt for credentials:i:1" >> ~/Desktop/$computerName-Remote.rdp
+
+                echo -e "full address:s:$computerName" > ~/Desktop/$computerName-Local.rdp
+                echo -e "promptcredentialonce:i:1" >> ~/Desktop/$computerName-Local.rdp
+                echo -e "prompt for credentials:i:1" >> ~/Desktop/$computerName-Local.rdp
                 break;
                 ;;
             "FreeRDP")
@@ -124,12 +143,13 @@ if [ "$currentUser" == "root" ] ; then
 
                 while [[ -z "$computer2" ]]
                 do
-                    read -p "Would you like to add another computer? (Y/N) " -n 1 -r
-                    echo    # (optional) move to a new line
+                    read -p "Would you like to add another computer? (Y/N) "
                     if [[ $REPLY =~ ^[Yy]$ ]]
                     then
+                        echo
                         echo "What is the computer name?"
                         read -r computer2
+                        echo
                         echo -e "#!/bin/bash" > ~/Desktop/$computer2-Local.sh
                         echo -e "xfreerdp /v:$computer2 +clipboard /multimon /u:\"$domain\\$username\" /audio-mode:0" >> ~/Desktop/$computer2-Local.sh
                         chmod +x ~/Desktop/$computer2-Local.sh
@@ -139,7 +159,9 @@ if [ "$currentUser" == "root" ] ; then
                         chmod +x ~/Desktop/$computer2-Remote.sh
                         
                         computer2=""
-                    fi
+                else
+                        computer2="nothing"
+                fi
                 done
                 break;
                 ;;
@@ -149,11 +171,10 @@ if [ "$currentUser" == "root" ] ; then
             *) echo "invalid option $REPLY";;
         esac
     done
-
-
-
-    apt-get -y install numlockx
+    
+    apt-get -qq install numlockx
     numlockx on
+
 #    pacmd set-card-profile 2 output:iec958-stereo
 
 
