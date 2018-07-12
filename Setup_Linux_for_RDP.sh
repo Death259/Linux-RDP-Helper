@@ -2,10 +2,10 @@
 currentUser=$(whoami)
 if [ "$currentUser" == "root" ] ; then
     #Update/Upgrade the OS
-    #apt-get -y update && apt-get -y upgrade
+    apt-get -y update && apt-get -y upgrade
 
     #Allow the user to change timezone
-    #dpkg-reconfigure tzdata
+    dpkg-reconfigure tzdata
     
     #Check if uncomplicated firewall exists and if so ask if the user wants to enable it
     if [ -n "$(type -t ufw)" ] ; then
