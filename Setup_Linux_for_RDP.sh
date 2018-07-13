@@ -25,6 +25,7 @@ if [ "$currentUser" == "root" ] ; then
         dpkg-reconfigure tzdata
     elif [ $linuxDistro == "Fedora" ] ; then
         eval $packageManager install system-config-keyboard
+        system-config-keyboard
         tzselect
     fi
     
