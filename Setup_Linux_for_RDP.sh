@@ -12,7 +12,7 @@ currentUser=$(whoami)
 if [ "$currentUser" == "root" ] ; then
     #Update/Upgrade the OS
     if [ $linuxDistro == "Debian" ] ; then
-        apt-get -y update && apt-get -y upgrade
+        eval $packageManager -y update && apt-get -y upgrade
     elif [ $linuxDistro == "Fedora" ] ; then
         eval $packageManager check-update
     else
@@ -37,6 +37,17 @@ if [ "$currentUser" == "root" ] ; then
             fi
             echo
         fi
+    elif [ -n "$(type -t firewalld)" ] ; then
+	if [ "$(systemctl status firewalld | grep Active | awk '{print $2}')" = "inactive" ] ; then
+            read -p "Would you like to Enable the Firewall? (Y/N) "
+            #echo    # (optional) move to a new line
+            if [[ $REPLY =~ ^[Yy]$ ]]
+            then
+                systemctl enable firewalld
+                systemctl start firewalld
+            fi
+            echo
+        fi     
     fi
 
     echo 'Which IDE Would you Like to Install?: '
@@ -139,27 +150,26 @@ if [ "$currentUser" == "root" ] ; then
     do
         case $opt in
             "Remmina")
-                apt-get -y install remmina remmina-plugin-rdp
-                echo -e "full address:s:$computerName" > ~/Desktop/$computerName-Remote.rdp
-                echo -e "gatewayhostname:s:$gateway" >> ~/Desktop/$computerName-Remote.rdp
-                echo -e "promptcredentialonce:i:1" >> ~/Desktop/$computerName-Remote.rdp
-                echo -e "prompt for credentials:i:1" >> ~/Desktop/$computerName-Remote.rdp
+                eval $packageManager -y install remmina remmina-plugin-rdp
+                echo -e "full address:s:$computerName" > /home/$USER/Desktop/$computerName-Remote.rdp
+                echo -e "gatewayhostname:s:$gateway" >> /home/$USER/Desktop/$computerName-Remote.rdp
+                echo -e "promptcredentialonce:i:1" >> /home/$USER/Desktop/$computerName-Remote.rdp
+                echo -e "prompt for credentials:i:1" >> /home/$USER/Desktop/$computerName-Remote.rdp
 
-                echo -e "full address:s:$computerName" > ~/Desktop/$computerName-Local.rdp
-                echo -e "promptcredentialonce:i:1" >> ~/Desktop/$computerName-Local.rdp
-                echo -e "prompt for credentials:i:1" >> ~/Desktop/$computerName-Local.rdp
+                echo -e "full address:s:$computerName" > /home/$USER/Desktop/$computerName-Local.rdp
+                echo -e "promptcredentialonce:i:1" >> /home/$USER/Desktop/$computerName-Local.rdp
+                echo -e "prompt for credentials:i:1" >> /home/$USER/Desktop/$computerName-Local.rdp
                 break;
                 ;;
             "FreeRDP")
-                apt-get -y install freerdp2-x11
-		#yum install freerdp
-                echo -e "#!/bin/bash" > ~/Desktop/$computerName-Local.sh
-                echo -e "xfreerdp /v:$computerName +clipboard /multimon /u:\"$domain\\$username\" /audio-mode:0" >> ~/Desktop/$computerName-Local.sh
-                chmod +x ~/Desktop/$computerName-Local.sh
+                eval $packageManager -y install freerdp2-x11 freerdp
+                echo -e "#!/bin/bash" > /home/$USER/Desktop/$computerName-Local.sh
+                echo -e "xfreerdp /v:$computerName +clipboard /multimon /u:\"$domain\\$username\" /audio-mode:0" >> /home/$USER/Desktop/$computerName-Local.sh
+                chmod +x /home/$USER/Desktop/$computerName-Local.sh
 
-                echo -e "#!/bin/bash" > ~/Desktop/$computerName-Remote.sh
-                echo -e "xfreerdp /v:$computerName +clipboard /multimon /u:\"$username@$UPN\" /g:\"$gateway\" /audio-mode:0" >> ~/Desktop/$computerName-Remote.sh
-                chmod +x ~/Desktop/$computerName-Remote.sh
+                echo -e "#!/bin/bash" > /home/$USER/Desktop/$computerName-Remote.sh
+                echo -e "xfreerdp /v:$computerName +clipboard /multimon /u:\"$username@$UPN\" /g:\"$gateway\" /audio-mode:0" >> /home/$USER/Desktop/$computerName-Remote.sh
+                chmod +x /home/$USER/Desktop/$computerName-Remote.sh
 
                 while [[ -z "$computer2" ]]
                 do
@@ -170,13 +180,13 @@ if [ "$currentUser" == "root" ] ; then
                         echo "What is the computer name?"
                         read -r computer2
                         echo
-                        echo -e "#!/bin/bash" > ~/Desktop/$computer2-Local.sh
-                        echo -e "xfreerdp /v:$computer2 +clipboard /multimon /u:\"$domain\\$username\" /audio-mode:0" >> ~/Desktop/$computer2-Local.sh
-                        chmod +x ~/Desktop/$computer2-Local.sh
+                        echo -e "#!/bin/bash" > /home/$USER/Desktop/$computer2-Local.sh
+                        echo -e "xfreerdp /v:$computer2 +clipboard /multimon /u:\"$domain\\$username\" /audio-mode:0" >> /home/$USER/Desktop/$computer2-Local.sh
+                        chmod +x /home/$USER/Desktop/$computer2-Local.sh
 
-                        echo -e "#!/bin/bash" > ~/Desktop/$computer2-Remote.sh
-                        echo -e "xfreerdp /v:$computer2 +clipboard /multimon /u:\"$username@$UPN\" /g:\"$gateway\" /audio-mode:0" >> ~/Desktop/$computer2-Remote.sh
-                        chmod +x ~/Desktop/$computer2-Remote.sh
+                        echo -e "#!/bin/bash" > /home/$USER/Desktop/$computer2-Remote.sh
+                        echo -e "xfreerdp /v:$computer2 +clipboard /multimon /u:\"$username@$UPN\" /g:\"$gateway\" /audio-mode:0" >> /home/$USER/Desktop/$computer2-Remote.sh
+                        chmod +x /home/$USER/Desktop/$computer2-Remote.sh
                         
                         computer2=""
                 else
@@ -192,7 +202,7 @@ if [ "$currentUser" == "root" ] ; then
         esac
     done
     
-    apt-get -qq install numlockx
+    eval $packageManager -qq -y install numlockx
     numlockx on
 
 #    pacmd set-card-profile 2 output:iec958-stereo
