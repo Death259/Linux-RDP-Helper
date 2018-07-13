@@ -1,2 +1,2 @@
 # Linux RDP Helper
-This project is meant to help get everything setup in order to be able to connect to windows machines via RDP.
+This project was originally meant to help get everything setup in order to be able to connect to windows machines via RDP. This has since grown to be a complete initial setup script for a Linux installation. My hope is that you can install a fresh copy of linux and use this to get most everything setup.
