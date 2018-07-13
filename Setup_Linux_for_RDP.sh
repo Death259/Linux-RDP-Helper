@@ -1,9 +1,24 @@
 #!/bin/bash
+getLinuxDistro() {
+    if [ -n "$(type -t yum)" ] ; then
+	return "Fedora"
+    elif [ -n "$(type -t apt-get)" ] ; then
+	return "Debian"
+    fi
+}
+
 currentUser=$(whoami)
 if [ "$currentUser" == "root" ] ; then
     #Update/Upgrade the OS
-    apt-get -y update && apt-get -y upgrade
+    if [ getLinuxDistro == "Debian" ] ; then
+        apt-get -y update && apt-get -y upgrade
+    elif [ getLinuxDistro == "Debian" ] ; then
+        yum check-update
+    else
+        apt-get -y update && apt-get -y upgrade	
+    fi
 
+    read
     #Allow the user to change timezone
     dpkg-reconfigure tzdata
     
@@ -133,6 +148,7 @@ if [ "$currentUser" == "root" ] ; then
                 ;;
             "FreeRDP")
                 apt-get -y install freerdp2-x11
+		#yum install freerdp
                 echo -e "#!/bin/bash" > ~/Desktop/$computerName-Local.sh
                 echo -e "xfreerdp /v:$computerName +clipboard /multimon /u:\"$domain\\$username\" /audio-mode:0" >> ~/Desktop/$computerName-Local.sh
                 chmod +x ~/Desktop/$computerName-Local.sh
