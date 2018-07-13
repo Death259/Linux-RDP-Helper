@@ -162,14 +162,21 @@ if [ "$currentUser" == "root" ] ; then
                 break;
                 ;;
             "FreeRDP")
-                eval $packageManager -y install freerdp2-x11 freerdp
-                echo -e "#!/bin/bash" > /home/$USER/Desktop/$computerName-Local.sh
-                echo -e "xfreerdp /v:$computerName +clipboard /multimon /u:\"$domain\\$username\" /audio-mode:0" >> /home/$USER/Desktop/$computerName-Local.sh
-                chmod +x /home/$USER/Desktop/$computerName-Local.sh
+                eval $packageManager -y install freerdp2-x11
+                eval $packageManager -q -y install freerdp
+                localRDPFileName=/home/$USER/Desktop/$computerName-Local.sh
+                remoteRDPFileName=/home/$USER/Desktop/$computerName-Remote.sh
+                if [ $linuxDistro == "Debian" ] ; then
+                    localRDPFileName=~/Desktop/$computerName-Local.sh
+                    remoteRDPFileName=~/Desktop/$computerName-Remote.sh
+                fi
+                echo -e "#!/bin/bash" > $localRDPFileName
+                echo -e "xfreerdp /v:$computerName +clipboard /multimon /u:\"$domain\\$username\" /audio-mode:0" >> $localRDPFileName
+                chmod +x $localRDPFileName
 
-                echo -e "#!/bin/bash" > /home/$USER/Desktop/$computerName-Remote.sh
-                echo -e "xfreerdp /v:$computerName +clipboard /multimon /u:\"$username@$UPN\" /g:\"$gateway\" /audio-mode:0" >> /home/$USER/Desktop/$computerName-Remote.sh
-                chmod +x /home/$USER/Desktop/$computerName-Remote.sh
+                echo -e "#!/bin/bash" > $remoteRDPFileName
+                echo -e "xfreerdp /v:$computerName +clipboard /multimon /u:\"$username@$UPN\" /g:\"$gateway\" /audio-mode:0" >> $remoteRDPFileName
+                chmod +x $remoteRDPFileName
 
                 while [[ -z "$computer2" ]]
                 do
@@ -180,13 +187,19 @@ if [ "$currentUser" == "root" ] ; then
                         echo "What is the computer name?"
                         read -r computer2
                         echo
-                        echo -e "#!/bin/bash" > /home/$USER/Desktop/$computer2-Local.sh
-                        echo -e "xfreerdp /v:$computer2 +clipboard /multimon /u:\"$domain\\$username\" /audio-mode:0" >> /home/$USER/Desktop/$computer2-Local.sh
-                        chmod +x /home/$USER/Desktop/$computer2-Local.sh
+                        localRDPFileName=/home/$USER/Desktop/$computer2-Local.sh
+                        remoteRDPFileName=/home/$USER/Desktop/$computer2-Remote.sh
+                        if [ $linuxDistro == "Debian" ] ; then
+                            localRDPFileName=~/Desktop/$computer2-Local.sh
+                            remoteRDPFileName=~/Desktop/$computer2-Remote.sh
+                        fi
+                        echo -e "#!/bin/bash" > $localRDPFileName
+                        echo -e "xfreerdp /v:$computer2 +clipboard /multimon /u:\"$domain\\$username\" /audio-mode:0" >> $localRDPFileName
+                        chmod +x $localRDPFileName
 
-                        echo -e "#!/bin/bash" > /home/$USER/Desktop/$computer2-Remote.sh
-                        echo -e "xfreerdp /v:$computer2 +clipboard /multimon /u:\"$username@$UPN\" /g:\"$gateway\" /audio-mode:0" >> /home/$USER/Desktop/$computer2-Remote.sh
-                        chmod +x /home/$USER/Desktop/$computer2-Remote.sh
+                        echo -e "#!/bin/bash" > $remoteRDPFileName
+                        echo -e "xfreerdp /v:$computer2 +clipboard /multimon /u:\"$username@$UPN\" /g:\"$gateway\" /audio-mode:0" >> $remoteRDPFileName
+                        chmod +x $remoteRDPFileName
                         
                         computer2=""
                 else
