@@ -19,10 +19,12 @@ if [ "$currentUser" == "root" ] ; then
         eval $packageManager -y update && apt-get -y upgrade
     fi
 
-    #Allow the user to change timezone
+    #Allow the user to change timezone and keyboard
     if [ $linuxDistro == "Debian" ] ; then
+        dpkg-reconfigure keyboard-configuration
         dpkg-reconfigure tzdata
     elif [ $linuxDistro == "Fedora" ] ; then
+        eval $packageManager install system-config-keyboard
         tzselect
     fi
     
