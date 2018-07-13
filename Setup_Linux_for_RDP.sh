@@ -1,26 +1,30 @@
 #!/bin/bash
-getLinuxDistro() {
-    if [ -n "$(type -t yum)" ] ; then
-	return "Fedora"
-    elif [ -n "$(type -t apt-get)" ] ; then
-	return "Debian"
-    fi
-}
+if [ -n "$(type -t yum)" ] ; then
+    linuxDistro="Fedora"
+    packageManager="yum"
+elif [ -n "$(type -t apt-get)" ] ; then
+    linuxDistro="Debian"
+    packageManager="apt-get"
+fi
+
 
 currentUser=$(whoami)
 if [ "$currentUser" == "root" ] ; then
     #Update/Upgrade the OS
-    if [ getLinuxDistro == "Debian" ] ; then
+    if [ $linuxDistro == "Debian" ] ; then
         apt-get -y update && apt-get -y upgrade
-    elif [ getLinuxDistro == "Debian" ] ; then
-        yum check-update
+    elif [ $linuxDistro == "Fedora" ] ; then
+        eval $packageManager check-update
     else
-        apt-get -y update && apt-get -y upgrade	
+        eval $packageManager -y update && apt-get -y upgrade
     fi
 
-    read
     #Allow the user to change timezone
-    dpkg-reconfigure tzdata
+    if [ $linuxDistro == "Debian" ] ; then
+        dpkg-reconfigure tzdata
+    elif [ $linuxDistro == "Fedora" ] ; then
+        tzselect
+    fi
     
     #Check if uncomplicated firewall exists and if so ask if the user wants to enable it
     if [ -n "$(type -t ufw)" ] ; then
@@ -41,15 +45,15 @@ if [ "$currentUser" == "root" ] ; then
     do
         case $opt in
             "jedit")
-                apt-get -y install jedit
+                eval $packageManager -y install jedit
                 break;
                 ;;
             "kdevelop")
-                apt-get -y install kdevelop
+                eval $packageManager -y install kdevelop
                 break;
                 ;;
             "scite")
-                apt-get -y install scite
+                eval $packageManager -y install scite
                 break;
                 ;;
             "None")
@@ -66,11 +70,11 @@ if [ "$currentUser" == "root" ] ; then
     do
         case $opt in
             "ClamAV")
-                apt-get -y install clamav clamtk
+                eval $packageManager -y install clamav clamtk
                 break;
                 ;;
             "Chkrootkit")
-                apt-get -y install chkrootkit
+                eval $packageManager -y install chkrootkit
                 break;
                 ;;
             "None")
@@ -87,15 +91,15 @@ if [ "$currentUser" == "root" ] ; then
     do
         case $opt in
             "Shutter")
-                apt-get -y install shutter
+                eval $packageManager -y install shutter
                 break;
                 ;;
             "Kazam")
-                apt-get -y install kazam
+                eval $packageManager -y install kazam
                 break;
                 ;;
             "Flameshot")
-                apt-get -y install flameshot
+                eval $packageManager -y install flameshot
                 break;
                 ;;
             "None")
