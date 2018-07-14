@@ -153,15 +153,21 @@ if [ "$currentUser" == "root" ] ; then
     do
         case $opt in
             "Remmina")
+                localRDPFileName=/home/$USER/Desktop/$computerName-Local.rdp
+                remoteRDPFileName=/home/$USER/Desktop/$computerName-Remote.rdp
+                if [ $linuxDistro == "Debian" ] ; then
+                    localRDPFileName=~/Desktop/$computerName-Local.rdp
+                    remoteRDPFileName=~/Desktop/$computerName-Remote.rdp
+                fi
                 eval $packageManager -y install remmina remmina-plugin-rdp
-                echo -e "full address:s:$computerName" > /home/$USER/Desktop/$computerName-Remote.rdp
-                echo -e "gatewayhostname:s:$gateway" >> /home/$USER/Desktop/$computerName-Remote.rdp
-                echo -e "promptcredentialonce:i:1" >> /home/$USER/Desktop/$computerName-Remote.rdp
-                echo -e "prompt for credentials:i:1" >> /home/$USER/Desktop/$computerName-Remote.rdp
+                echo -e "full address:s:$computerName" > $remoteRDPFileName
+                echo -e "gatewayhostname:s:$gateway" >> $remoteRDPFileName
+                echo -e "promptcredentialonce:i:1" >> $remoteRDPFileName
+                echo -e "prompt for credentials:i:1" >> $remoteRDPFileName
 
-                echo -e "full address:s:$computerName" > /home/$USER/Desktop/$computerName-Local.rdp
-                echo -e "promptcredentialonce:i:1" >> /home/$USER/Desktop/$computerName-Local.rdp
-                echo -e "prompt for credentials:i:1" >> /home/$USER/Desktop/$computerName-Local.rdp
+                echo -e "full address:s:$computerName" > $localRDPFileName
+                echo -e "promptcredentialonce:i:1" >> $localRDPFileName
+                echo -e "prompt for credentials:i:1" >> $localRDPFileName
                 break;
                 ;;
             "FreeRDP")
