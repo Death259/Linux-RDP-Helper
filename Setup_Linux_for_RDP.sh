@@ -172,7 +172,7 @@ if [ "$currentUser" == "root" ] ; then
                 ;;
             "FreeRDP")
                 eval $packageManager -y install freerdp2-x11
-                eval $packageManager -q -y install freerdp
+                eval $packageManager -y install freerdp
                 localRDPFileName=/home/$USER/Desktop/$computerName-Local.sh
                 remoteRDPFileName=/home/$USER/Desktop/$computerName-Remote.sh
                 if [ $linuxDistro == "Debian" ] ; then
@@ -224,7 +224,7 @@ if [ "$currentUser" == "root" ] ; then
         esac
     done
     
-    eval $packageManager -qq -y install numlockx
+    eval $packageManager -y install numlockx
     numlockx on
 
 #    pacmd set-card-profile 2 output:iec958-stereo
