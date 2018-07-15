@@ -14,6 +14,8 @@ if [ "$currentUser" == "root" ] ; then
     if [ $linuxDistro == "Debian" ] ; then
         eval $packageManager -y update && apt-get -y upgrade
     elif [ $linuxDistro == "Fedora" ] ; then
+	#add the RPM Fusion Repository
+	yum install -y https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
         eval $packageManager check-update
     else
         eval $packageManager -y update && apt-get -y upgrade
@@ -114,6 +116,29 @@ if [ "$currentUser" == "root" ] ; then
                 ;;
             "Flameshot")
                 eval $packageManager -y install flameshot
+                break;
+                ;;
+            "None")
+                break
+                ;;
+            *) echo "invalid option $REPLY";;
+        esac
+    done
+    echo
+
+    echo 'Which Music Client Would you Like to Install?: '
+    ScreenShotToolOptions=("Spotify" "Pithos (Pandora)" "None")
+    select opt in "${ScreenShotToolOptions[@]}"
+    do
+        case $opt in
+            "Spotify")
+                eval $packageManager -y install snapd
+		ln -s /var/lib/snapd/snap /snap
+		snap install spotify
+                break;
+                ;;
+            "Pithos (Pandora)")
+                eval $packageManager -y install pithos
                 break;
                 ;;
             "None")
