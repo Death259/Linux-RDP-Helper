@@ -1,4 +1,27 @@
 #!/bin/bash
+
+function getComputerInformation {
+    echo "What is the username?"
+    read -r username
+    echo
+
+    echo "What is the UPN?"
+    read -r UPN
+    echo
+
+    echo "What is the Domain?"
+    read -r domain
+    echo
+
+    echo "What is the gateway?"
+    read -r gateway
+    echo
+
+    echo "What is the computer name?"
+    read -r computerName
+    echo
+}
+
 if [ -n "$(type -t yum)" ] ; then
     linuxDistro="Fedora"
     packageManager="yum"
@@ -149,35 +172,13 @@ if [ "$currentUser" == "root" ] ; then
     done
     echo
 
-    #echo "Installing FreeRDP..."
-    #sudo apt-get -qq install freerdp-x11 yad zenity
-    #sudo apt-get -y install freerdp2-x11
-    echo "What is the username?"
-    read -r username
-    echo
-
-    echo "What is the UPN?"
-    read -r UPN
-    echo
-
-    echo "What is the Domain?"
-    read -r domain
-    echo
-
-    echo "What is the gateway?"
-    read -r gateway
-    echo
-
-    echo "What is the computer name?"
-    read -r computerName
-    echo
-
     echo 'Which RDP Client Would you Like to Install?: '
     RDPClientOptions=("Remmina" "FreeRDP" "None")
     select opt in "${RDPClientOptions[@]}"
     do
         case $opt in
             "Remmina")
+                getComputerInformation
                 localRDPFileName=/home/$USER/Desktop/$computerName-Local.rdp
                 remoteRDPFileName=/home/$USER/Desktop/$computerName-Remote.rdp
                 if [ $linuxDistro == "Debian" ] ; then
@@ -196,6 +197,7 @@ if [ "$currentUser" == "root" ] ; then
                 break;
                 ;;
             "FreeRDP")
+                getComputerInformation
                 eval $packageManager -y install freerdp2-x11
                 eval $packageManager -y install freerdp
                 localRDPFileName=/home/$USER/Desktop/$computerName-Local.sh
