@@ -53,6 +53,24 @@ if [ "$currentUser" == "root" ] ; then
         system-config-keyboard
         tzselect
     fi
+
+    echo 'Which clock format would you like?: '
+    clockFormatOptions=("12 Hour" "24 Hour")
+    select opt in "${clockFormatOptions[@]}"
+    do
+        case $opt in
+            "12 Hour")
+                dconf write /org/mate/panel/objects/clock/prefs/format "'12-hour'"
+                break;
+                ;;
+            "24 Hour")
+                dconf write /org/mate/panel/objects/clock/prefs/format "'24-hour'"
+                break;
+                ;;
+            *) echo "invalid option $REPLY";;
+        esac
+    done
+    echo
     
     #Check if uncomplicated firewall exists and if so ask if the user wants to enable it
     if [ -n "$(type -t ufw)" ] ; then
@@ -65,6 +83,7 @@ if [ "$currentUser" == "root" ] ; then
             fi
             echo
         fi
+    #else if firewalld exists and it's not active, then activate it
     elif [ -n "$(type -t firewalld)" ] ; then
 	if [ "$(systemctl status firewalld | grep Active | awk '{print $2}')" = "inactive" ] ; then
             read -p "Would you like to Enable the Firewall? (Y/N) "
