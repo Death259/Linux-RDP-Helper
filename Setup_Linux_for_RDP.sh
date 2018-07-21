@@ -22,6 +22,16 @@ function getComputerInformation {
     echo
 }
 
+function setupSnap {
+	if [ -n "$(type -t snap)" ] ; then
+		eval $packageManager -y install snapd
+	fi
+
+	if [ -z "$(ls / -l | grep '^l' | grep snap)" ] ; then
+		ln -s /var/lib/snapd/snap /snap
+	fi
+}
+
 if [ -n "$(type -t yum)" ] ; then
     linuxDistro="Fedora"
     packageManager="yum"
@@ -29,7 +39,6 @@ elif [ -n "$(type -t apt-get)" ] ; then
     linuxDistro="Debian"
     packageManager="apt-get"
 fi
-
 
 currentUser=$(whoami)
 if [ "$currentUser" == "root" ] ; then
@@ -56,6 +65,7 @@ if [ "$currentUser" == "root" ] ; then
         tzselect
     fi
 
+    #Change clock to be in 12 hour or 24 hour format
     echo 'Which clock format would you like?: '
     clockFormatOptions=("12 Hour" "24 Hour")
     select opt in "${clockFormatOptions[@]}"
@@ -100,7 +110,7 @@ if [ "$currentUser" == "root" ] ; then
     fi
 
     echo 'Which IDE Would you Like to Install?: '
-    IDEOptions=("jedit" "kdevelop" "scite" "None")
+    IDEOptions=("jedit" "kdevelop" "scite" "VS Code" "None")
     select opt in "${IDEOptions[@]}"
     do
         case $opt in
@@ -114,6 +124,50 @@ if [ "$currentUser" == "root" ] ; then
                 ;;
             "scite")
                 eval $packageManager -y install scite
+                break;
+                ;;
+            "VS Code")
+                #snap install powershell --classic
+                if [ $linuxDistro == "Debian" ] ; then
+                    dpkg-reconfigure keyboard-configuration
+                    curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+                    mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
+                    sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
+                    eval $packageManager update
+                    eval $packageManager -y install code
+                elif [ $linuxDistro == "Fedora" ] ; then
+                    sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+                    sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+                    eval $packageManager check-update
+                    eval $packageManager -y install code
+                fi
+
+                break;
+                ;;
+            "None")
+                break
+                ;;
+            *) echo "invalid option $REPLY";;
+        esac
+    done
+    echo
+
+    echo 'Which Email Client Would you Like to Install?: '
+    IDEOptions=("Mailspring" "Thunderbird" "Evolution" "None")
+    select opt in "${IDEOptions[@]}"
+    do
+        case $opt in
+            "Mailspring")
+                setupSnap
+		snap install Mailspring
+                break;
+                ;;
+            "Thunderbird")
+                eval $packageManager -y install thunderbird
+                break;
+                ;;
+            "Evolution")
+                eval $packageManager -y install evolution
                 break;
                 ;;
             "None")
@@ -176,8 +230,7 @@ if [ "$currentUser" == "root" ] ; then
     do
         case $opt in
             "Spotify")
-                eval $packageManager -y install snapd
-		ln -s /var/lib/snapd/snap /snap
+		setupSnap
 		snap install spotify
                 break;
                 ;;
