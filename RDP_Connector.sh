@@ -14,7 +14,7 @@ fi
 #    eval sudo $packageManager -qq install freerdp yad
 #fi
 
-action=$(yad --center --width 300 --title "Connect via RDP" \
+action=$(yad --center --width 400 --title "Connect via RDP" \
     --window-icon="gtk-connect" \
     --form \
     --field="Server" "" \
@@ -23,8 +23,9 @@ action=$(yad --center --width 300 --title "Connect via RDP" \
     --field="Username" "" \
     --field="Domain" "" \
     --field="BPP":CBE "32!24!16" \
-    --field="Multi Monitor?":CHK true \
+    --field="Multi Monitor":CHK true \
     --field="Fullscreen":CHK true \
+    --field="Redirect Clipboard":CHK true \
     --button="gtk-connect:0" --button="gtk-close:1")
 ret=$?
 
@@ -38,6 +39,7 @@ Domain=$(echo $action 		| awk -F '|' '{ print $5 }')
 BPP=$(echo $action 		| awk -F '|' '{ print $6 }')
 MultiMonitor=$(echo $action 	| awk -F '|' '{ print $7 }')
 Fullscreen=$(echo $action 	| awk -F '|' '{ print $8 }')
+RedirectClipboard=$(echo $action 	| awk -F '|' '{ print $9 }')
 
 xfreerdpCommand="xfreerdp "
 if [ -n "$Server" ] ; then
@@ -63,6 +65,9 @@ if [ $MultiMonitor ] ; then
 fi
 if [ $Fullscreen ] ; then
     xfreerdpCommand="$xfreerdpCommand /f"
+fi
+if [ $RedirectClipboard ] ; then
+    xfreerdpCommand="$xfreerdpCommand +clipboard"
 fi
 
 eval "$xfreerdpCommand"
