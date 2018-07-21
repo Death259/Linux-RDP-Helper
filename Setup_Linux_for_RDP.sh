@@ -40,6 +40,8 @@ if [ "$currentUser" == "root" ] ; then
 	#add the RPM Fusion Repository
 	yum install -y https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
         eval $packageManager check-update
+	dnf install gstreamer1-{ffmpeg,libav,plugins-{good,ugly,bad{,-free,-nonfree}}} --setopt=strict=0
+	dnf install ffmpeg-libs
     else
         eval $packageManager -y update && apt-get -y upgrade
     fi
