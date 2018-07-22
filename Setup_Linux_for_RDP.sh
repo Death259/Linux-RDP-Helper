@@ -141,7 +141,10 @@ if [ "$currentUser" == "root" ] ; then
                     eval $packageManager check-update
                     eval $packageManager -y install code
                 fi
-
+                break;
+                ;;
+            "spyder")
+                eval $packageManager -y install spyder
                 break;
                 ;;
             "None")
