@@ -26,8 +26,14 @@ action=$(yad --center --width 400 --title "Connect via RDP" \
     --field="Multi Monitor":CHK true \
     --field="Fullscreen":CHK true \
     --field="Redirect Clipboard":CHK true \
+    --field="Show Theme":CHK true \
+    --field="Show Wallpaper":CHK true \
+    --field="Auto Reconnect":CHK true \
     --button="gtk-connect:0" --button="gtk-close:1")
 ret=$?
+
+#    --field="Compression Level":CBE "0!1!2" \    
+
 
 [[ $ret -eq 1 ]] && exit 0
 
@@ -37,9 +43,14 @@ Gateway=$(echo $action 		| awk -F '|' '{ print $3 }')
 Username=$(echo $action 	| awk -F '|' '{ print $4 }')
 Domain=$(echo $action 		| awk -F '|' '{ print $5 }')
 BPP=$(echo $action 		| awk -F '|' '{ print $6 }')
+#CompressionLevel=$(echo $action 		| awk -F '|' '{ print $7 }')
 MultiMonitor=$(echo $action 	| awk -F '|' '{ print $7 }')
 Fullscreen=$(echo $action 	| awk -F '|' '{ print $8 }')
 RedirectClipboard=$(echo $action 	| awk -F '|' '{ print $9 }')
+ShowTheme=$(echo $action 	| awk -F '|' '{ print $10 }')
+ShowWallpaper=$(echo $action 	| awk -F '|' '{ print $11 }')
+AutoReconnect=$(echo $action 	| awk -F '|' '{ print $12 }')
+
 
 xfreerdpCommand="xfreerdp "
 if [ -n "$Server" ] ; then
@@ -60,6 +71,9 @@ fi
 if [ -n "$Bpp" ] ; then
     xfreerdpCommand="$xfreerdpCommand /bpp:$Bpp"
 fi
+if [ -n "$CompressionLevel" ] ; then
+    xfreerdpCommand="$xfreerdpCommand /compression /compression-level:$CompressionLevel"
+fi
 if [ $MultiMonitor ] ; then
     xfreerdpCommand="$xfreerdpCommand /multimon"
 fi
@@ -68,6 +82,15 @@ if [ $Fullscreen ] ; then
 fi
 if [ $RedirectClipboard ] ; then
     xfreerdpCommand="$xfreerdpCommand +clipboard"
+fi
+if [ !$ShowTheme ] ; then
+    xfreerdpCommand="$xfreerdpCommand -themes"
+fi
+if [ !$ShowWallpaper ] ; then
+    xfreerdpCommand="$xfreerdpCommand -wallpaper"
+fi
+if [ $AutoReconnect ] ; then
+    xfreerdpCommand="$xfreerdpCommand /auto-reconnect"
 fi
 
 eval "$xfreerdpCommand"
