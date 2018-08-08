@@ -22,6 +22,7 @@ action=$(yad --center --width 400 --title "Connect via RDP" \
     --field="Remote Gateway" "" \
     --field="Username" "" \
     --field="Domain" "" \
+    --field="Compression Level":CBE "0!1!2" \
     --field="BPP":CBE "32!24!16" \
     --field="Multi Monitor":CHK true \
     --field="Fullscreen":CHK true \
@@ -32,8 +33,6 @@ action=$(yad --center --width 400 --title "Connect via RDP" \
     --button="gtk-connect:0" --button="gtk-close:1")
 ret=$?
 
-#    --field="Compression Level":CBE "0!1!2" \    
-
 
 [[ $ret -eq 1 ]] && exit 0
 
@@ -43,7 +42,7 @@ Gateway=$(echo $action 		| awk -F '|' '{ print $3 }')
 Username=$(echo $action 	| awk -F '|' '{ print $4 }')
 Domain=$(echo $action 		| awk -F '|' '{ print $5 }')
 BPP=$(echo $action 		| awk -F '|' '{ print $6 }')
-#CompressionLevel=$(echo $action 		| awk -F '|' '{ print $7 }')
+CompressionLevel=$(echo $action 		| awk -F '|' '{ print $7 }')
 MultiMonitor=$(echo $action 	| awk -F '|' '{ print $7 }')
 Fullscreen=$(echo $action 	| awk -F '|' '{ print $8 }')
 RedirectClipboard=$(echo $action 	| awk -F '|' '{ print $9 }')
