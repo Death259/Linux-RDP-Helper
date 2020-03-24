@@ -43,12 +43,12 @@ Username=$(echo $action 	| awk -F '|' '{ print $4 }')
 Domain=$(echo $action 		| awk -F '|' '{ print $5 }')
 BPP=$(echo $action 		| awk -F '|' '{ print $6 }')
 CompressionLevel=$(echo $action 		| awk -F '|' '{ print $7 }')
-MultiMonitor=$(echo $action 	| awk -F '|' '{ print $7 }')
-Fullscreen=$(echo $action 	| awk -F '|' '{ print $8 }')
-RedirectClipboard=$(echo $action 	| awk -F '|' '{ print $9 }')
-ShowTheme=$(echo $action 	| awk -F '|' '{ print $10 }')
-ShowWallpaper=$(echo $action 	| awk -F '|' '{ print $11 }')
-AutoReconnect=$(echo $action 	| awk -F '|' '{ print $12 }')
+MultiMonitor=$(echo $action 	| awk -F '|' '{ print $8 }')
+Fullscreen=$(echo $action 	| awk -F '|' '{ print $9 }')
+RedirectClipboard=$(echo $action 	| awk -F '|' '{ print $10 }')
+ShowTheme=$(echo $action 	| awk -F '|' '{ print $11 }')
+ShowWallpaper=$(echo $action 	| awk -F '|' '{ print $12 }')
+AutoReconnect=$(echo $action 	| awk -F '|' '{ print $13 }')
 
 
 xfreerdpCommand="xfreerdp "
@@ -73,22 +73,22 @@ fi
 if [ -n "$CompressionLevel" ] ; then
     xfreerdpCommand="$xfreerdpCommand /compression /compression-level:$CompressionLevel"
 fi
-if [ $MultiMonitor ] ; then
+if [ "$MultiMonitor" = "TRUE" ] ; then
     xfreerdpCommand="$xfreerdpCommand /multimon"
 fi
-if [ $Fullscreen ] ; then
+if [ "$Fullscreen" = "TRUE" ] ; then
     xfreerdpCommand="$xfreerdpCommand /f"
 fi
-if [ $RedirectClipboard ] ; then
+if [ "$RedirectClipboard" = "TRUE" ] ; then
     xfreerdpCommand="$xfreerdpCommand +clipboard"
 fi
-if [ !$ShowTheme ] ; then
+if [ "$ShowTheme" != "TRUE" ] ; then
     xfreerdpCommand="$xfreerdpCommand -themes"
 fi
-if [ !$ShowWallpaper ] ; then
+if [ "$ShowWallpaper"  != "TRUE" ] ; then
     xfreerdpCommand="$xfreerdpCommand -wallpaper"
 fi
-if [ $AutoReconnect ] ; then
+if [ "$AutoReconnect"  = "TRUE" ] ; then
     xfreerdpCommand="$xfreerdpCommand /auto-reconnect"
 fi
 
