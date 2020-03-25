@@ -38,6 +38,9 @@ if [ -n "$(type -t yum)" ] ; then
 elif [ -n "$(type -t apt-get)" ] ; then
     linuxDistro="Debian"
     packageManager="apt-get"
+elif [ -n "$(type -t zypper)" ] ; then
+    linuxDistro="openSUSE"
+    packageManager="zypper"
 fi
 
 currentUser=$(whoami)
@@ -248,6 +251,28 @@ if [ "$currentUser" == "root" ] ; then
         esac
     done
     echo
+    
+    read -p "Would you like to install Microsft Teams? (Y/N) "
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+	if [ $linuxDistro == "Debian" ] ; then
+		curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+		sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/ms-teams stable main" > /etc/apt/sources.list.d/teams.list'
+		apt update
+		apt install teams
+	elif [ $linuxDistro == "Fedora" ] ; then
+		rpm --import https://packages.microsoft.com/keys/microsoft.asc
+		sh -c 'echo -e "[teams]\nname=teams\nbaseurl=https://packages.microsoft.com/yumrepos/ms-teams\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/teams.repo' 
+		yum check-update
+		yum install teams
+	elif [ $linuxDistro == "openSUSE" ] ; then
+		rpm --import https://packages.microsoft.com/keys/microsoft.asc
+		sh -c 'echo -e "[teams]\nname=teams\nbaseurl=https://packages.microsoft.com/yumrepos/ms-teams\nenabled=1\nautorefresh=1\nkeeppackages=0\ntype=rpm-md\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/zypp/repos.d/teams.repo'
+		zypper refresh
+		zypper install teams
+	fi
+    fi
+    echo
 
     echo 'Which RDP Client Would you Like to Install?: '
     RDPClientOptions=("Remmina" "FreeRDP" "None")
@@ -328,8 +353,12 @@ if [ "$currentUser" == "root" ] ; then
         esac
     done
     
-    eval $packageManager -y install numlockx
-    numlockx on
+    read -p "Would you like to turn on numlock? (Y/N) "
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+	    eval $packageManager -y install numlockx
+	    numlockx on
+    fi
 
 #    pacmd set-card-profile 2 output:iec958-stereo
 
